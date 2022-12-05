@@ -1,6 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			token:null,
 			message: null,
 			demo: [
 				{
@@ -21,17 +22,64 @@ const getState = ({ getStore, getActions, setStore }) => {
 				getActions().changeColor(0, "green");
 			},
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
+			syncTokenFromSessionStore: () => {
+				const token = sessionStorage.getItem("token");
+				console.log("Aplication just loaded, synching the session storage token ")
+				if(token && token != "" && token != undefined)setStore({token:token})
+			},
+
+			// logout: () => {
+			// 	const token = sessionStorage.removeItem("token");
+			// 	console.log("login out")
+			// 	setStore({token:null})
+
+			// },
+
+			login: async (email, password) => {
+				var myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+		
+				var raw = JSON.stringify({
+				"email": email,
+				"password": password
+				});
+		
+				var requestOptions = {
+				method: 'POST',
+				headers: myHeaders,
+				body: raw,
+				redirect: 'follow'
+				};
+		
+				try {
+					const resp = await fetch("https://3001-4geeksacade-reactflaskh-7ogjpa9e5yk.ws-eu77.gitpod.io/api/token", requestOptions)
+					if (resp.status !== 200){
+						alert("There has been some error")
+						return false
+					}
+
 					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
+					console.log("esto viene del backend",data)
+					sessionStorage.setItem("token",data.access_token)
+					setStore({token:data.access_token})
+						return true
+		
+				}catch(error) {
+					console.error("There was an error!!!",error)
 				}
+			},
+			
+			getMessage: () => {
+				const store = getStore();
+				const opts = {
+					headers: {
+						"Authorization": "Bearer "+ store.token
+					}
+				}
+				fetch("https://3001-4geeksacade-reactflaskh-7ogjpa9e5yk.ws-eu77.gitpod.io/api/private",opts)
+				.then(resp => resp.json())
+				.then(data => setStore({message:data.message}))
+				.catch(error => console.log("Error loading message from backend", error))
 			},
 			changeColor: (index, color) => {
 				//get the store

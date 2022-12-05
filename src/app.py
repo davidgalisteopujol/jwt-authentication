@@ -7,10 +7,12 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, User
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_jwt_extended import JWTManager
+
 
 #from models import Person
 
@@ -18,6 +20,11 @@ ENV = os.getenv("FLASK_ENV")
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+# Setup the Flask-JWT-Extended extension
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -62,6 +69,51 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0 # avoid cache memory
     return response
+
+
+
+# #ejemplo
+# @app.route('/signup', methods=['POST'])
+# def signup():
+#     new_user = {}
+#     body = request.get_json()
+#     if body is None:
+#         return jsonify({"msg":"The body is empty"}), 403
+#     new_user = User(email = body["email"],password= body["password"], is_active = True)
+#     print("Esta es mi info desde Back",body)
+#     db.session.add(new_user)
+#     db.session.commit()
+#     return jsonify({"msg":"user registered successfully"}),201
+
+
+# @app.route("/token", methods=["POST"])
+# def create_token():
+#     email = request.json.get("email", None)
+#     password = request.json.get("password", None)
+#     # Query your database for username and password
+#     user = User.query.filter_by(email=email).first()
+#     if email != email or password !=password:
+#         # the user was not found on the database
+#         return jsonify({"msg": "Bad username or password"}), 401
+    
+#     # create a new token with the user id inside
+#     access_token = create_access_token(identity=email)
+#     return jsonify( access_token = access_token)
+
+
+#hecho con javi
+# @app.route("/login", methods=["POST"])
+# def login():
+#     email = request.json.get("email", None)
+#     password = request.json.get("password", None)
+#     user = User.query.filter_by(email = email).first()
+#     if user is None:
+#         return {"msg": "Invalid email or password"},400
+
+#     access_token = create_access_token(identity=user["email"])
+#     return jsonify({"token": access_token}),200
+    
+        
 
 
 # this only runs if `$ python src/main.py` is executed
