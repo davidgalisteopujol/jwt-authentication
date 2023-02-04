@@ -26,7 +26,7 @@ const Signup = () => {
         redirect: 'follow'
         };
 
-        fetch("https://3001-4geeksacade-reactflaskh-7ogjpa9e5yk.ws-eu77.gitpod.io/api/signup", requestOptions)
+        fetch(process.env.BACKEND_URL+"/api/signup", requestOptions)
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
@@ -37,8 +37,6 @@ const Signup = () => {
         }
         
     }
-
-
 
 
     let schemaEmail = yup.object().shape({
@@ -74,9 +72,11 @@ const Signup = () => {
 
                 <label className="form-label"></label>
                 <input className={`form-control ${isValidEmail ? "" : "is-invalid"}`} required onBlur={handleBlurEmail} type = "text" id="email" placeholder="Email" />
-                
+                {!isValidEmail && (<div className="invalid-feedback">Email is invalid</div>)}
+
                 <label className="form-label"></label>
                 <input className={`form-control ${isValidPassword ? "" :"is-invalid"}`} required onBlur={handleBlurPassword} type ="password" id="password" placeholder="Password" />
+                {!isValidPassword && (<div className="invalid-feedback">Password must be at least 10 characters long and alphanumeric </div>)}
 
                 <button onClick={()=>{sendInfo()}}>Send</button>
 

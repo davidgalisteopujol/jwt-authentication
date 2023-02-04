@@ -59,11 +59,11 @@ const handleBlurPassword =(e)=> {
 
                 <label className="form-label"></label>
                 <input className={`form-control ${isValidEmail ? "" : "is-invalid"}`} required onBlur={handleBlurEmail} type = "text" id="email" placeholder="Email" onChange = {(e)=>setEmail(e.target.value)} value = {email}/>
-                {/* <div classname="invalid-feedback">Please provide a valid Email.</div> */}
-
+                {!isValidEmail && (<div className="invalid-feedback">Email is invalid</div>)}
+                
                 <label className="form-label"></label>
                 <input className={`form-control ${isValidPassword ? "" :"is-invalid"}`} required onBlur={handleBlurPassword} type ="password" id="password" placeholder="Password" onChange = {(e)=>setPassword(e.target.value)} value = {password}/>
-                {/* <div classname="invalid-feedback">Please provide a valid Password.</div> */}
+                {!isValidPassword && (<div className="invalid-feedback">Password must be at least 10 characters long and alphanumeric </div>)}
 
                 <button onClick={handleClick}>Send</button>
                 

@@ -50,9 +50,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				body: raw,
 				redirect: 'follow'
 				};
-		
+			
 				try {
-					const resp = await fetch("https://3001-4geeksacade-reactflaskh-7ogjpa9e5yk.ws-eu77.gitpod.io/api/token", requestOptions)
+					const resp = await fetch(process.env.BACKEND_URL+"/api/token", requestOptions)
+	
 					if (resp.status !== 200){
 						alert("There has been some error")
 						return false
@@ -76,7 +77,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						"Authorization": "Bearer "+ store.token
 					}
 				}
-				fetch("https://3001-4geeksacade-reactflaskh-7ogjpa9e5yk.ws-eu77.gitpod.io/api/private",opts)
+				fetch(process.env.BACKEND_URL+"/api/private",opts)
 				.then(resp => resp.json())
 				.then(data => setStore({message:data.message}))
 				.catch(error => console.log("Error loading message from backend", error))
